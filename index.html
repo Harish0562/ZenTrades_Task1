@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Table</title>
+</head>
+<body>
+    <h1>Product Table</h1>
+    <table border="1" id="productTable">
+        <thead>
+            <tr>
+                <th>Subcategory</th>
+                <th>Title</th>
+                <th>Price</th>
+                <th>Popularity</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+    <script>
+      // Step 1: Fetch JSON data from the local file
+      fetch('D:/Zentrades/Public/assignment.json')
+          .then(response => {
+              if (!response.ok) {
+                  throw new Error('Failed to fetch the JSON file. Status code: ${response.status}');
+              }
+              return response.json();
+          })
+          .then(data => {
+              // Check if the 'products' key exists in the JSON data
+              if (!data.hasOwnProperty('products')) {
+                  throw new Error("The JSON file doesn't contain the 'products' key.");
+              }
+  
+              // Step 2: Store the data in a data structure and sort by descending popularity
+              const sortedProducts = data.products.sort((a, b) => b.popularity - a.popularity);
+  
+              // Step 3: Display the sorted data in the table
+              const tableBody = document.getElementById('tableBody');
+  
+              if (sortedProducts.length === 0) {
+                  console.warn("No products found in the JSON file.");
+              }
+  
+              sortedProducts.forEach(product => {
+                  const row = tableBody.insertRow();
+                  row.insertCell(0).innerText = product['subcategory'];
+                  row.insertCell(1).innerText = product['title'];
+                  row.insertCell(2).innerText = product['price'];
+                  row.insertCell(3).innerText = product['popularity'];
+              });
+          })
+          .catch(error => console.error('Error:', error.message));
+  </script>
+</body>
+</html>
