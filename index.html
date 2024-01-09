@@ -38,8 +38,8 @@
     
         #productTable tbody tr:hover {
             background-color: #e6e6e6;
-            transform: scale(1.05); /* Increase size on hover */
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+            transform: scale(1.05); 
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
         }
     
         #productList {
@@ -78,13 +78,13 @@
             if (data && data.products) {
                 const products = data.products;
     
-                // Convert object to array
+                
                 const productArray = Object.keys(products).map(key => ({
                     id: key,
                     ...products[key]
                 }));
     
-                // Sort array based on descending popularity
+                
                 const sortedData = productArray.sort((a, b) => b.popularity - a.popularity);
     
                 sortedData.forEach(product => {
