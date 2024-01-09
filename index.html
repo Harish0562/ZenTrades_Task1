@@ -3,56 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Table</title>
+    <title>Product Display</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #00B1D2FF;
+            margin: 0;
+            padding: 20px;
+        }
+    
+        h2 {
+            color: #333;
+            text-align: center;
+        }
+    
+        #productTable {
+            max-width: 800px;
+            margin: 0 auto;
+            border-collapse: collapse;
+            width: 100%;
+        }
+    
+        #productTable th, #productTable td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+    
+        #productTable th {
+            background-color: #8f8f8f;
+            color: #fff;
+        }
+    
+        #productTable tbody tr:hover {
+            background-color: #e6e6e6;
+            transform: scale(1.05); /* Increase size on hover */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+        }
+    
+        #productList {
+            background-color: #d1ffd1;
+        }
+    </style>
 </head>
 <body>
-    <h1>Product Table</h1>
-    <table border="1" id="productTable">
+    <h2 class="heading">Task 1</h2>
+    <table id="productTable">
         <thead>
             <tr>
-                <th>Subcategory</th>
                 <th>Title</th>
                 <th>Price</th>
                 <th>Popularity</th>
             </tr>
         </thead>
-        <tbody id="tableBody"></tbody>
+        <tbody id="productList"></tbody>
     </table>
 
+
     <script>
-      // Step 1: Fetch JSON data from the local file
-      fetch('D:/Zentrades/Public/assignment.json')
-          .then(response => {
-              if (!response.ok) {
-                  throw new Error('Failed to fetch the JSON file. Status code: ${response.status}');
-              }
-              return response.json();
-          })
-          .then(data => {
-              // Check if the 'products' key exists in the JSON data
-              if (!data.hasOwnProperty('products')) {
-                  throw new Error("The JSON file doesn't contain the 'products' key.");
-              }
-  
-              // Step 2: Store the data in a data structure and sort by descending popularity
-              const sortedProducts = data.products.sort((a, b) => b.popularity - a.popularity);
-  
-              // Step 3: Display the sorted data in the table
-              const tableBody = document.getElementById('tableBody');
-  
-              if (sortedProducts.length === 0) {
-                  console.warn("No products found in the JSON file.");
-              }
-  
-              sortedProducts.forEach(product => {
-                  const row = tableBody.insertRow();
-                  row.insertCell(0).innerText = product['subcategory'];
-                  row.insertCell(1).innerText = product['title'];
-                  row.insertCell(2).innerText = product['price'];
-                  row.insertCell(3).innerText = product['popularity'];
-              });
-          })
-          .catch(error => console.error('Error:', error.message));
-  </script>
+        async function fetchData() {
+            try {
+                const response = await fetch('https://s3.amazonaws.com/open-to-cors/assignment.json');
+                return response.json();
+            } catch (error) {
+                console.error('Error fetching or parsing data:', error);
+            }
+        }
+    
+        async function displayData() {
+            const productList = document.getElementById('productList');
+            const data = await fetchData();
+    
+            if (data && data.products) {
+                const products = data.products;
+    
+                // Convert object to array
+                const productArray = Object.keys(products).map(key => ({
+                    id: key,
+                    ...products[key]
+                }));
+    
+                // Sort array based on descending popularity
+                const sortedData = productArray.sort((a, b) => b.popularity - a.popularity);
+    
+                sortedData.forEach(product => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td>${product.title}</td>
+                                     <td>$${product.price}</td>
+                                     <td>${product.popularity}</td>`;
+                    productList.appendChild(row);
+                });
+            }
+        }
+    
+        displayData();
+    </script>
 </body>
 </html>
